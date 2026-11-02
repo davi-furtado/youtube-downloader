@@ -88,5 +88,6 @@ for link in links:
             ydl.download([link])
     except Exception as e:
         print(f"❌ Erro ao baixar o link {link}: {e}")
+        exit(1)
 
 print("\n✨ Todos os downloads foram concluídos!")
