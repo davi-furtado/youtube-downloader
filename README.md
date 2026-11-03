@@ -30,9 +30,9 @@ Make sure you have Python installed on your system.
 to embed thumbnails in audio files. Audio downloads use M4A directly and do not
 convert to MP3.
 
-For authenticated downloads, create a `cookies.txt` file in the project root
-using the Netscape cookie format. The script reads cookies only from this file.
-Never commit it, because it contains authentication data.
+For authenticated downloads, the script automatically reads cookies from the
+default Chrome profile. Chrome may need to be closed so `yt-dlp` can copy its
+cookie database.
 
 - **Windows (via Winget):**
   ```powershell
@@ -93,8 +93,9 @@ uv run main.py
 
 ### Authentication Cookies
 
-To download content that requires authentication, place your exported YouTube
-cookies in `cookies.txt` at the project root. This file is ignored by Git.
+Downloads use cookies from the default Chrome profile automatically through
+`yt-dlp`. If Chrome is open and its cookie database is locked, close Chrome
+before running the downloader.
 
 ## 📂 Output File Structure
 
