@@ -80,7 +80,8 @@ ydl_opts["outtmpl"] = {
     "default": (
         f"{output_dir}\\%(playlist_title|.)s\\"
         "%(playlist_index&{}. |)s%(title)s.%(ext)s"
-    )
+    ),
+    "pl_thumbnail": "",
 }
 
 MAX_CONCURRENT_DOWNLOADS = 3
