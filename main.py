@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 import questionary
 import yt_dlp
@@ -44,7 +45,10 @@ output_dir.mkdir(parents=True, exist_ok=True)
 # 3. Pergunta o formato desejado do download
 formato = questionary.select(
     "Escolha o formato de download:",
-    choices=["Melhor qualidade de vídeo", "Melhor qualidade de áudio"],
+    choices=[
+        "Melhor qualidade de vídeo",
+        "Melhor qualidade de áudio (M4A, sem conversão)",
+    ],
 ).ask()
 
 if not formato:
@@ -61,33 +65,48 @@ if formato == "Melhor qualidade de vídeo":
             "merge_output_format": "mp4",
         }
     )
-else:  # Melhor qualidade de áudio
+else:  # Melhor qualidade de áudio sem conversão
     ydl_opts.update(
         {
-            "format": "bestaudio/best",
-            "postprocessors": [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "mp3",
-                    "preferredquality": "192",
-                }
-            ],
+            "format": "bestaudio[ext=m4a]/bestaudio[ext=mp4]",
         }
     )
 
 # Template de diretórios e nomes utilizando o diretório escolhido dinamicamente
 ydl_opts["outtmpl"] = {
-    "default": f"{output_dir}/%(playlist_title&%(playlist_title)s/%(playlist_index)s. %(title)s|%(title)s)s.%(ext)s"
+    "default": (
+        f"{output_dir}\\%(playlist_title|.)s\\"
+        "%(playlist_index&{}. |)s%(title)s.%(ext)s"
+    )
 }
 
-# 4. Executa o download para cada link encontrado
-for link in links:
+MAX_CONCURRENT_DOWNLOADS = 3
+
+
+def download_link(link: str) -> Exception | None:
     print(f"\n🚀 Processando: {link}")
     try:
         with yt_dlp.YoutubeDL(params=ydl_opts) as ydl:  # type: ignore
             ydl.download([link])
+        return None
     except Exception as e:
         print(f"❌ Erro ao baixar o link {link}: {e}")
-        exit(1)
+        return e
+
+
+# 4. Executa os downloads em paralelo, limitando a quantidade simultânea
+errors: list[tuple[str, Exception]] = []
+worker_count = min(MAX_CONCURRENT_DOWNLOADS, len(links))
+
+with ThreadPoolExecutor(max_workers=worker_count) as executor:
+    futures = {executor.submit(download_link, link): link for link in links}
+    for future in as_completed(futures):
+        error = future.result()
+        if error is not None:
+            errors.append((futures[future], error))
+
+if errors:
+    print(f"\n❌ {len(errors)} download(s) falharam.")
+    exit(1)
 
 print("\n✨ Todos os downloads foram concluídos!")
