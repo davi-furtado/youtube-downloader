@@ -30,6 +30,10 @@ Make sure you have Python installed on your system.
 to embed thumbnails in audio files. Audio downloads use M4A directly and do not
 convert to MP3.
 
+The script also reads authentication cookies from Google Chrome. Log in to
+YouTube in Chrome before running the downloader. If cookie access fails, close
+Chrome and try again.
+
 - **Windows (via Winget):**
   ```powershell
   winget install FFmpeg
