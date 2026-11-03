@@ -115,9 +115,16 @@ if not conflict_policy:
     exit(1)
 
 # Dicionário dinâmico de opções
+manual_cookies = Path("cookies.txt")
 ydl_opts = {
-    "cookiesfrombrowser": ("chrome",),
+    # Uma falha em um vídeo não interrompe os demais itens da playlist.
+    "ignoreerrors": True,
 }
+
+if manual_cookies.exists():
+    ydl_opts["cookiefile"] = str(manual_cookies)
+else:
+    ydl_opts["cookiesfrombrowser"] = ("chrome",)
 
 if formato == "Vídeo [MP4]":
     ydl_opts.update(
