@@ -116,7 +116,7 @@ if not conflict_policy:
 
 # Dicionário dinâmico de opções
 ydl_opts = {
-    "cookiesfrombrowser": ("chrome",),
+    "cookiefile": "cookies.txt",
 }
 
 if formato == "Vídeo [MP4]":

@@ -30,9 +30,9 @@ Make sure you have Python installed on your system.
 to embed thumbnails in audio files. Audio downloads use M4A directly and do not
 convert to MP3.
 
-The script also reads authentication cookies from Google Chrome. Log in to
-YouTube in Chrome before running the downloader. If cookie access fails, close
-Chrome and try again.
+For authenticated downloads, create a `cookies.txt` file in the project root
+using the Netscape cookie format. The script reads cookies only from this file.
+Never commit it, because it contains authentication data.
 
 - **Windows (via Winget):**
   ```powershell
@@ -90,6 +90,11 @@ uv run main.py
 
 1. Paste your links one by one.
 2. Press **Enter** on an empty input field to finish adding links.
+
+### Authentication Cookies
+
+To download content that requires authentication, place your exported YouTube
+cookies in `cookies.txt` at the project root. This file is ignored by Git.
 
 ## 📂 Output File Structure
 
