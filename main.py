@@ -45,7 +45,7 @@ output_dir.mkdir(parents=True, exist_ok=True)
 # 3. Pergunta o formato desejado do download
 formato = questionary.select(
     "Escolha o formato de download:",
-    choices=["Vídeo [MP4]", "Áudio [M4A]"],
+    choices=["Áudio [M4A]", "Vídeo [MP4]"],
 ).ask()
 
 if not formato:
