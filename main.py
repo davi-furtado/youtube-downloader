@@ -45,10 +45,7 @@ output_dir.mkdir(parents=True, exist_ok=True)
 # 3. Pergunta o formato desejado do download
 formato = questionary.select(
     "Escolha o formato de download:",
-    choices=[
-        "Melhor qualidade de vídeo",
-        "Melhor qualidade de áudio (M4A, sem conversão)",
-    ],
+    choices=["Vídeo [MP4]", "Áudio [M4A]"],
 ).ask()
 
 if not formato:
@@ -58,7 +55,7 @@ if not formato:
 # Dicionário dinâmico de opções
 ydl_opts = {}
 
-if formato == "Melhor qualidade de vídeo":
+if formato == "Vídeo [MP4]":
     ydl_opts.update(
         {
             "format": "bestvideo+bestaudio/best",
@@ -69,6 +66,12 @@ else:  # Melhor qualidade de áudio sem conversão
     ydl_opts.update(
         {
             "format": "bestaudio[ext=m4a]/bestaudio[ext=mp4]",
+            "writethumbnail": True,
+            "postprocessors": [
+                {
+                    "key": "EmbedThumbnail",
+                }
+            ],
         }
     )
 
