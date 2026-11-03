@@ -11,21 +11,24 @@ a `links.txt` file (if present).
 - 💬 **Interactive Mode**: Prompts you to paste links via the terminal if
 `links.txt` is not found.
 - 📁 **Custom Directory**: Allows you to choose the save location (defaults to `downloads/`).
-- 🎬 **Format & Quality Selection**: Choose between **Best Video Quality**
-(`.mp4`) or **Best Audio Quality** (`.mp3`).
+- 🎬 **Format & Quality Selection**: Choose between video (`.mp4`) or direct
+audio (`.m4a`) downloads.
+- 🖼️ **Audio Cover Art**: Embeds the video's thumbnail as the M4A cover.
 - 🗂️ **Automatic Playlist Organization**: Saves playlists into dedicated
 subfolders named after the playlist with track numbering.
+- ⚡ **Concurrent Downloads**: Processes up to three links simultaneously.
 
 ## 🛠️ Prerequisites
 
-### 1. Python 3.8+
+### 1. Python 3.15+
 
 Make sure you have Python installed on your system.
 
 ### 2. FFmpeg (Required)
 
 `yt-dlp` requires **FFmpeg** to merge high-quality video and audio streams and
-to extract MP3 files.
+to embed thumbnails in audio files. Audio downloads use M4A directly and do not
+convert to MP3.
 
 - **Windows (via Winget):**
   ```powershell
@@ -92,6 +95,8 @@ Downloaded files will be organized as follows:
   `{chosen_directory}/{video_title}.{ext}`
 - **Playlists:**
   `{chosen_directory}/{playlist_title}/{track_number}. {video_title}.{ext}`
+
+Audio files use the `.m4a` format and include the video's thumbnail as cover art.
 
 ## 📜 License
 
