@@ -7,18 +7,18 @@ import yt_dlp
 links_file = Path("links.txt")
 links: list[str] = []
 
-# 1. Verifica a existência do arquivo links.txt ou coleta interativamente
+# 1. Check for links.txt or collect links interactively
 if links_file.exists():
-    print("📁 Arquivo 'links.txt' encontrado. Lendo os links...")
+    print("📁 Found 'links.txt'. Reading links...")
     with open(links_file) as f:
         links = [
             line.strip() for line in f if line.strip() and not line.startswith("#")
         ]
 else:
-    print("⚠️ Arquivo 'links.txt' não encontrado. Insira os links interativamente.")
+    print("⚠️ 'links.txt' not found. Enter links interactively.")
     while True:
         link = questionary.text(
-            "Digite o link do YouTube (vídeo ou playlist) ou pressione Enter para finalizar:"
+            "Enter a YouTube video or playlist link, or press Enter to finish:"
         ).ask()
 
         if not link or not link.strip():
@@ -26,7 +26,7 @@ else:
         links.append(link.strip())
 
 if not links:
-    print("❌ Nenhum link fornecido. Encerrando o programa.")
+    print("❌ No links provided. Exiting.")
     exit(1)
 
 
@@ -74,50 +74,50 @@ for link in links:
         unique_links.append(normalized)
 
 if len(unique_links) != len(links):
-    print(f"ℹ️ {len(links) - len(unique_links)} link(s) duplicado(s) removido(s).")
+    print(f"ℹ️ Removed {len(links) - len(unique_links)} duplicate link(s).")
 links = unique_links
 
-# 2. Pergunta onde os arquivos devem ser salvos
+# 2. Ask where files should be saved
 output_dir_input = questionary.text(
-    "Onde deseja salvar os arquivos? (Pressione Enter para usar a pasta padrão 'downloads'):"
+    "Where should files be saved? (Press Enter to use the default 'downloads' directory):"
 ).ask()
 
-# Define o diretório (padrão 'downloads' se vazio)
+# Set the directory (use 'downloads' when empty)
 if output_dir_input and output_dir_input.strip():
     output_dir = Path(output_dir_input.strip())
 else:
     output_dir = Path("downloads")
 
-# Garante que o diretório de destino existe
+# Ensure the output directory exists
 output_dir.mkdir(parents=True, exist_ok=True)
 
-# 3. Pergunta o formato desejado do download
-formato = questionary.select(
-    "Escolha o formato de download:",
-    choices=["Áudio [M4A]", "Vídeo [MP4]"],
+# 3. Ask for the desired download format
+download_format = questionary.select(
+    "Choose the download format:",
+    choices=["Audio [M4A]", "Video [MP4]"],
 ).ask()
 
-if not formato:
-    print("❌ Nenhuma opção selecionada. Encerrando.")
+if not download_format:
+    print("❌ No option selected. Exiting.")
     exit(1)
 
 conflict_policy = questionary.select(
-    "O que fazer quando o vídeo ou arquivo já existir?",
+    "What should happen when the video or file already exists?",
     choices=[
-        "Continuar downloads e ignorar existentes",
-        "Substituir arquivos existentes",
-        "Perguntar individualmente",
+        "Continue downloads and skip existing files",
+        "Replace existing files",
+        "Ask individually",
     ],
 ).ask()
 
 if not conflict_policy:
-    print("❌ Nenhuma opção selecionada. Encerrando.")
+    print("❌ No option selected. Exiting.")
     exit(1)
 
-# Dicionário dinâmico de opções
+# Dynamic options dictionary
 manual_cookies = Path("cookies.txt")
 ydl_opts = {
-    # Uma falha em um vídeo não interrompe os demais itens da playlist.
+    # A video failure does not interrupt the remaining playlist items.
     "ignoreerrors": True,
 }
 
@@ -126,14 +126,14 @@ if manual_cookies.exists():
 else:
     ydl_opts["cookiesfrombrowser"] = ("chrome",)
 
-if formato == "Vídeo [MP4]":
+if download_format == "Video [MP4]":
     ydl_opts.update(
         {
             "format": "bestvideo+bestaudio/best",
             "merge_output_format": "mp4",
         }
     )
-else:  # Melhor qualidade de áudio sem conversão
+else:  # Best audio quality without conversion
     ydl_opts.update(
         {
             "format": "bestaudio[ext=m4a]/bestaudio[ext=mp4]",
@@ -146,7 +146,7 @@ else:  # Melhor qualidade de áudio sem conversão
         }
     )
 
-# Template de diretórios e nomes utilizando o diretório escolhido dinamicamente
+# Directory and filename template using the dynamically selected directory
 ydl_opts["outtmpl"] = {
     "default": (
         f"{output_dir}\\%(playlist_title|.)s\\"
@@ -156,7 +156,11 @@ ydl_opts["outtmpl"] = {
 }
 
 MAX_CONCURRENT_DOWNLOADS = 3
-archive_name = ".yt-dlp-audio.txt" if formato == "Áudio [M4A]" else ".yt-dlp-video.txt"
+archive_name = (
+    ".yt-dlp-audio.txt"
+    if download_format == "Audio [M4A]"
+    else ".yt-dlp-video.txt"
+)
 DOWNLOAD_ARCHIVE = output_dir / archive_name
 
 
@@ -207,7 +211,7 @@ def link_has_conflict(link: str) -> bool:
 
 
 def prepare_link_decisions() -> dict[str, str]:
-    if conflict_policy != "Perguntar individualmente":
+    if conflict_policy != "Ask individually":
         return {}
 
     decisions: dict[str, str] = {}
@@ -215,7 +219,7 @@ def prepare_link_decisions() -> dict[str, str]:
         try:
             has_conflict = link_has_conflict(link)
         except Exception as error:
-            print(f"⚠️ Não foi possível verificar {link}: {error}")
+            print(f"⚠️ Could not check {link}: {error}")
             has_conflict = False
 
         if not has_conflict:
@@ -223,35 +227,35 @@ def prepare_link_decisions() -> dict[str, str]:
             continue
 
         decision = questionary.select(
-            f"Já existem downloads para este link:\n{link}",
+            f"Downloads already exist for this link:\n{link}",
             choices=[
-                "Continuar e ignorar existentes",
-                "Substituir os existentes",
-                "Pular este link",
+                "Continue and skip existing files",
+                "Replace existing files",
+                "Skip this link",
             ],
         ).ask()
         if not decision:
-            print("❌ Nenhuma opção selecionada. Encerrando.")
+            print("❌ No option selected. Exiting.")
             exit(1)
         decisions[link] = {
-            "Continuar e ignorar existentes": "continue",
-            "Substituir os existentes": "replace",
-            "Pular este link": "skip",
+            "Continue and skip existing files": "continue",
+            "Replace existing files": "replace",
+            "Skip this link": "skip",
         }[decision]
     return decisions
 
 
 def download_link(link: str) -> Exception | None:
-    print(f"\n🚀 Processando: {link}")
+    print(f"\n🚀 Processing: {link}")
     try:
         default_decision = (
             "replace"
-            if conflict_policy == "Substituir arquivos existentes"
+            if conflict_policy == "Replace existing files"
             else "continue"
         )
         decision = link_decisions.get(link, default_decision)
         if decision == "skip":
-            print(f"⏭️ Ignorado: {link}")
+            print(f"⏭️ Skipped: {link}")
             return None
 
         download_opts = ydl_opts.copy()
@@ -265,13 +269,13 @@ def download_link(link: str) -> Exception | None:
             ydl.download([link])
         return None
     except Exception as e:
-        print(f"❌ Erro ao baixar o link {link}: {e}")
+        print(f"❌ Error downloading link {link}: {e}")
         return e
 
 
 link_decisions = prepare_link_decisions()
 
-# 4. Executa os downloads em paralelo, limitando a quantidade simultânea
+# 4. Download in parallel while limiting concurrency
 errors: list[tuple[str, Exception]] = []
 worker_count = min(MAX_CONCURRENT_DOWNLOADS, len(links))
 
@@ -283,7 +287,7 @@ with ThreadPoolExecutor(max_workers=worker_count) as executor:
             errors.append((futures[future], error))
 
 if errors:
-    print(f"\n❌ {len(errors)} download(s) falharam.")
+    print(f"\n❌ {len(errors)} download(s) failed.")
     exit(1)
 
-print("\n✨ Todos os downloads foram concluídos!")
+print("\n✨ All downloads completed!")

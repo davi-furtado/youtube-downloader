@@ -86,7 +86,7 @@ class DownloaderApp(ctk.CTk):
             font=ctk.CTkFont(size=24, weight="bold"),
         ).grid(row=0, column=0, padx=24, pady=(20, 12), sticky="w")
 
-        ctk.CTkLabel(self, text="Links (um por linha):").grid(
+        ctk.CTkLabel(self, text="Links (one per line):").grid(
             row=1, column=0, padx=24, sticky="w"
         )
         mono_font = ctk.CTkFont(family="Consolas", size=13)
@@ -97,21 +97,21 @@ class DownloaderApp(ctk.CTk):
         options.grid(row=3, column=0, padx=24, pady=(0, 14), sticky="ew")
         options.grid_columnconfigure(1, weight=1)
 
-        ctk.CTkLabel(options, text="Formato").grid(row=0, column=0, padx=12, pady=10, sticky="w")
-        self.format_var = ctk.StringVar(value="Vídeo MP4")
+        ctk.CTkLabel(options, text="Format").grid(row=0, column=0, padx=12, pady=10, sticky="w")
+        self.format_var = ctk.StringVar(value="Video MP4")
         ctk.CTkSegmentedButton(
             options,
-            values=["Vídeo MP4", "Áudio M4A"],
+            values=["Video MP4", "Audio M4A"],
             variable=self.format_var,
         ).grid(row=0, column=1, padx=12, pady=10, sticky="ew")
 
-        ctk.CTkLabel(options, text="Arquivos existentes").grid(
+        ctk.CTkLabel(options, text="Existing files").grid(
             row=1, column=0, padx=12, pady=(0, 10), sticky="w"
         )
-        self.conflict_var = ctk.StringVar(value="Continuar e ignorar")
+        self.conflict_var = ctk.StringVar(value="Continue and skip")
         ctk.CTkSegmentedButton(
             options,
-            values=["Continuar e ignorar", "Substituir"],
+            values=["Continue and skip", "Replace"],
             variable=self.conflict_var,
         ).grid(row=1, column=1, padx=12, pady=(0, 10), sticky="ew")
 
@@ -119,13 +119,13 @@ class DownloaderApp(ctk.CTk):
         destination.grid(row=4, column=0, padx=24, pady=(0, 14), sticky="ew")
         destination.grid_columnconfigure(1, weight=1)
 
-        ctk.CTkLabel(destination, text="Salvar em").grid(row=0, column=0, padx=12, pady=10)
+        ctk.CTkLabel(destination, text="Save to").grid(row=0, column=0, padx=12, pady=10)
         default_output = Path.home() / "Downloads" / "YouTube Downloader"
         self.output_var = ctk.StringVar(value=str(default_output))
         ctk.CTkEntry(destination, textvariable=self.output_var).grid(
             row=0, column=1, padx=(0, 8), pady=10, sticky="ew"
         )
-        ctk.CTkButton(destination, text="Escolher", width=90, command=self.choose_directory).grid(
+        ctk.CTkButton(destination, text="Choose", width=90, command=self.choose_directory).grid(
             row=0, column=2, padx=(0, 12), pady=10
         )
 
@@ -135,7 +135,7 @@ class DownloaderApp(ctk.CTk):
 
         self.download_button = ctk.CTkButton(
             actions,
-            text="Iniciar downloads",
+            text="Start downloads",
             height=42,
             command=self.start_download,
         )
@@ -145,7 +145,7 @@ class DownloaderApp(ctk.CTk):
         self.progress.grid(row=6, column=0, padx=24, pady=(0, 6), sticky="ew")
         self.progress.set(0)
 
-        self.status = ctk.CTkLabel(self, text="Pronto", anchor="w")
+        self.status = ctk.CTkLabel(self, text="Ready", anchor="w")
         self.status.grid(row=7, column=0, padx=24, pady=(0, 6), sticky="ew")
 
         self.log_box = ctk.CTkTextbox(self, height=170)
@@ -195,7 +195,7 @@ class DownloaderApp(ctk.CTk):
     def set_busy(self, busy: bool) -> None:
         self.download_button.configure(
             state="disabled" if busy else "normal",
-            text="Downloads em andamento..." if busy else "Iniciar downloads",
+            text="Downloads in progress..." if busy else "Start downloads",
         )
 
     def start_download(self) -> None:
@@ -213,7 +213,7 @@ class DownloaderApp(ctk.CTk):
                 unique_links.append(normalized)
 
         if not unique_links:
-            self.append_log("Informe pelo menos um link.")
+            self.append_log("Enter at least one link.")
             return
 
         output_dir = Path(self.output_var.get().strip()).expanduser()
@@ -223,7 +223,7 @@ class DownloaderApp(ctk.CTk):
         try:
             output_dir.mkdir(parents=True, exist_ok=True)
         except OSError as error:
-            self.append_log(f"Não foi possível criar a pasta de destino: {error}")
+            self.append_log(f"Could not create the output directory: {error}")
             return
 
         self.stop_requested.clear()
@@ -240,8 +240,8 @@ class DownloaderApp(ctk.CTk):
         ).start()
 
     def run_downloads(self, links: list[str], output_dir: Path) -> None:
-        is_audio = self.format_var.get() == "Áudio M4A"
-        replace = self.conflict_var.get() == "Substituir"
+        is_audio = self.format_var.get() == "Audio M4A"
+        replace = self.conflict_var.get() == "Replace"
 
         cookies_file = app_directory() / "cookies.txt"
         if not cookies_file.exists():
@@ -296,10 +296,10 @@ class DownloaderApp(ctk.CTk):
                 self_send(message)
 
             def warning(self, message: str) -> None:
-                self_send(f"Aviso: {message}")
+                self_send(f"Warning: {message}")
 
             def error(self, message: str) -> None:
-                self_send(f"Erro: {message}")
+                self_send(f"Error: {message}")
 
         def self_send(message: str) -> None:
             self.events.put(("log", message))
@@ -314,7 +314,7 @@ class DownloaderApp(ctk.CTk):
         def download(link: str) -> str | None:
             if self.stop_requested.is_set():
                 return None
-            self.events.put(("log", f"\nProcessando: {link}"))
+            self.events.put(("log", f"\nProcessing: {link}"))
             try:
                 with yt_dlp.YoutubeDL(params=ydl_opts.copy()) as ydl:
                     ydl.download([link])
@@ -322,7 +322,7 @@ class DownloaderApp(ctk.CTk):
             except Exception as error:
                 return f"{link}: {error}"
 
-        self.events.put(("status", f"Baixando {len(links)} item(ns)..."))
+        self.events.put(("status", f"Downloading {len(links)} item(s)..."))
 
         with ThreadPoolExecutor(max_workers=worker_count) as executor:
             futures = {executor.submit(download, link): link for link in links}
@@ -331,16 +331,16 @@ class DownloaderApp(ctk.CTk):
                 completed += 1
                 if error:
                     errors.append(error)
-                    self.events.put(("log", f"Falha: {error}"))
+                    self.events.put(("log", f"Failed: {error}"))
                 self.events.put(("progress", str(completed / len(links))))
-                self.events.put(("status", f"Concluído: {completed}/{len(links)}"))
+                self.events.put(("status", f"Completed: {completed}/{len(links)}"))
 
         if errors:
-            self.events.put(("status", f"{len(errors)} download(s) falharam"))
-            self.events.put(("log", "Verifique os erros acima e tente novamente."))
+            self.events.put(("status", f"{len(errors)} download(s) failed"))
+            self.events.put(("log", "Check the errors above and try again."))
         else:
-            self.events.put(("status", "Todos os downloads foram concluídos"))
-            self.events.put(("log", "Downloads concluídos com sucesso."))
+            self.events.put(("status", "All downloads completed"))
+            self.events.put(("log", "Downloads completed successfully."))
 
         self.after(0, lambda: self.set_busy(False))
 
@@ -350,9 +350,9 @@ class DownloaderApp(ctk.CTk):
             filename = data.get("filename")
             downloaded = data.get("_percent_str")
             if filename and downloaded:
-                self.events.put(("status", f"Baixando {Path(str(filename)).name}: {downloaded}"))
+                self.events.put(("status", f"Downloading {Path(str(filename)).name}: {downloaded}"))
         elif status == "finished":
-            self.events.put(("log", "Download concluído; finalizando arquivo..."))
+            self.events.put(("log", "Download complete; finalizing file..."))
 
 
 if __name__ == "__main__":

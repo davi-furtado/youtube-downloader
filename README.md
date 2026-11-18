@@ -1,22 +1,23 @@
 # YouTube Downloader
 
-Interface gráfica para baixar vídeos individuais e playlists do YouTube com
-`yt-dlp`. O projeto inclui uma interface web local em Tkinter/CustomTkinter e
-pode ser empacotado como um único executável para Windows.
+A graphical interface for downloading individual YouTube videos and playlists
+with `yt-dlp`. The project includes a local desktop interface built with
+Tkinter/CustomTkinter and can be packaged as a single Windows executable.
 
 ## 🚀 Features
 
-- 🖥️ **Interface gráfica**: Cole vários links e acompanhe o progresso em uma
-janela nativa no Windows.
-- 📄 **Leitura automática**: Importa links de `links.txt`, quando presente.
-- 📁 **Pasta de destino**: Escolha qualquer diretório por meio da interface.
-- 🎬 **Seleção de formato**: Baixe vídeos em `.mp4` ou áudio direto em `.m4a`.
+- 🖥️ **Graphical interface**: Paste multiple links and track progress in a
+native Windows window.
+- 📄 **Automatic link loading**: Imports links from `links.txt`, when present.
+- 📁 **Output directory**: Choose any directory through the interface.
+- 🎬 **Format selection**: Download videos as `.mp4` or audio directly as
+`.m4a`.
 - 🖼️ **Audio Cover Art**: Embeds the video's thumbnail as the M4A cover.
 - 🗂️ **Automatic Playlist Organization**: Saves playlists into dedicated
 subfolders named after the playlist with track numbering.
-- ⚡ **Downloads concorrentes**: Processa até três links simultaneamente.
-- 📦 **Executável standalone**: Pode ser distribuído como um único `.exe`,
-com FFmpeg incluído.
+- ⚡ **Concurrent downloads**: Processes up to three links simultaneously.
+- 📦 **Standalone executable**: Can be distributed as a single `.exe` with
+FFmpeg included.
 
 ## 🛠️ Prerequisites
 
@@ -65,18 +66,18 @@ uv sync
 
 ## 🖥️ Usage
 
-### Interface gráfica
+### Graphical interface
 
-Execute a interface durante o desenvolvimento:
+Run the interface during development:
 
 ```powershell
 uv run interface.py
 ```
 
-Adicione os links diretamente na caixa de texto, escolha o formato e a pasta de
-destino e clique em **Iniciar downloads**.
+Add links directly to the text box, choose the format and output directory, and
+click **Start downloads**.
 
-### Usando um arquivo `links.txt`
+### Using a `links.txt` file
 
 1. Create a file named `links.txt` in the same directory as the script.
 2. Add YouTube links (one per line):
@@ -86,28 +87,28 @@ https://www.youtube.com/watch?v=EXAMPLE1
 https://www.youtube.com/playlist?list=EXAMPLE2
 ```
 
-1. Execute a interface:
+1. Run the interface:
 
 ```powershell
 uv run interface.py
 ```
 
-Os links também podem ser fornecidos ao script antigo `main.py`:
+Links can also be provided to the legacy `main.py` script:
 
 ```powershell
 uv run main.py
 ```
 
-## Empacotar o executável
+## Packaging the executable
 
-No Windows, execute:
+On Windows, run:
 
 ```powershell
-.venv\Scripts\pyinstaller.exe --noconsole --onefile --clean --collect-all customtkinter --add-binary "C:\caminho\para\ffmpeg.exe;." interface.py
+uv run pyinstaller --noconsole --onefile --clean --collect-all customtkinter --add-binary "C:\path\to\ffmpeg.exe;." interface.py
 ```
 
-O executável gerado fica em `dist\interface.exe`. As pastas `build\` e `dist\`
-estão no `.gitignore`.
+The generated executable is placed at `dist\interface.exe`. The `build\` and
+`dist\` directories are listed in `.gitignore`.
 
 ### Authentication Cookies
 

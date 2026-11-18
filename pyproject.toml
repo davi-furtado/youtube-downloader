@@ -1,7 +1,7 @@
 [project]
 name = "youtube-downloader"
 version = "0.1.0"
-description = "Add your description here"
+description = "A YouTube video and playlist downloader with graphical and interactive interfaces"
 readme = "README.md"
 requires-python = ">=3.15"
 dependencies = [
