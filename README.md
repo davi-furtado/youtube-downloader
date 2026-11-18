@@ -1,22 +1,22 @@
-# 📥 YouTube Downloader with yt-dlp & Questionary
+# YouTube Downloader
 
-A simple and interactive Python script to download individual YouTube videos or
-entire playlists with quality selection and support for reading links via a file
-or terminal input.
+Interface gráfica para baixar vídeos individuais e playlists do YouTube com
+`yt-dlp`. O projeto inclui uma interface web local em Tkinter/CustomTkinter e
+pode ser empacotado como um único executável para Windows.
 
 ## 🚀 Features
 
-- 📄 **Automatic Link Detection**: Reads video and playlist links directly from
-a `links.txt` file (if present).
-- 💬 **Interactive Mode**: Prompts you to paste links via the terminal if
-`links.txt` is not found.
-- 📁 **Custom Directory**: Allows you to choose the save location (defaults to `downloads/`).
-- 🎬 **Format & Quality Selection**: Choose between video (`.mp4`) or direct
-audio (`.m4a`) downloads.
+- 🖥️ **Interface gráfica**: Cole vários links e acompanhe o progresso em uma
+janela nativa no Windows.
+- 📄 **Leitura automática**: Importa links de `links.txt`, quando presente.
+- 📁 **Pasta de destino**: Escolha qualquer diretório por meio da interface.
+- 🎬 **Seleção de formato**: Baixe vídeos em `.mp4` ou áudio direto em `.m4a`.
 - 🖼️ **Audio Cover Art**: Embeds the video's thumbnail as the M4A cover.
 - 🗂️ **Automatic Playlist Organization**: Saves playlists into dedicated
 subfolders named after the playlist with track numbering.
-- ⚡ **Concurrent Downloads**: Processes up to three links simultaneously.
+- ⚡ **Downloads concorrentes**: Processa até três links simultaneamente.
+- 📦 **Executável standalone**: Pode ser distribuído como um único `.exe`,
+com FFmpeg incluído.
 
 ## 🛠️ Prerequisites
 
@@ -65,7 +65,18 @@ uv sync
 
 ## 🖥️ Usage
 
-### Option A: Using a `links.txt` File
+### Interface gráfica
+
+Execute a interface durante o desenvolvimento:
+
+```powershell
+uv run interface.py
+```
+
+Adicione os links diretamente na caixa de texto, escolha o formato e a pasta de
+destino e clique em **Iniciar downloads**.
+
+### Usando um arquivo `links.txt`
 
 1. Create a file named `links.txt` in the same directory as the script.
 2. Add YouTube links (one per line):
@@ -75,22 +86,28 @@ https://www.youtube.com/watch?v=EXAMPLE1
 https://www.youtube.com/playlist?list=EXAMPLE2
 ```
 
-1. Run the script:
+1. Execute a interface:
 
-```bash
+```powershell
+uv run interface.py
+```
+
+Os links também podem ser fornecidos ao script antigo `main.py`:
+
+```powershell
 uv run main.py
 ```
 
-### Option B: Interactive Input
+## Empacotar o executável
 
-1. If no `links.txt` file is found, simply run the script:
+No Windows, execute:
 
-```bash
-uv run main.py
+```powershell
+.venv\Scripts\pyinstaller.exe --noconsole --onefile --clean --collect-all customtkinter --add-binary "C:\caminho\para\ffmpeg.exe;." interface.py
 ```
 
-1. Paste your links one by one.
-2. Press **Enter** on an empty input field to finish adding links.
+O executável gerado fica em `dist\interface.exe`. As pastas `build\` e `dist\`
+estão no `.gitignore`.
 
 ### Authentication Cookies
 

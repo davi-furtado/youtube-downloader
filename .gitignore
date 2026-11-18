@@ -3,3 +3,7 @@ __pycache__/
 downloads/
 cookies.txt
 links.txt
+build/
+dist/
+*.spec
+.yt-dlp-*.txt
